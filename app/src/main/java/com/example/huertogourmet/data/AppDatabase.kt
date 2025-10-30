@@ -10,7 +10,7 @@ import com.example.huertogourmet.data.dao.UsuarioDao
 import com.example.huertogourmet.data.model.Plato
 import com.example.huertogourmet.data.model.Usuario
 
-@Database(entities = [Usuario::class, Plato::class], version = 1, exportSchema = false)
+@Database(entities = [Usuario::class, Plato::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun usuarioDao(): UsuarioDao
     abstract fun platoDao(): PlatoDao
@@ -24,7 +24,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "huertogourmet_db"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = inst
                 inst
             }

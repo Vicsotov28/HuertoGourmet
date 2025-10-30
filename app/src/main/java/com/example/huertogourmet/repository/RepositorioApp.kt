@@ -17,7 +17,10 @@ class RepositorioApp(context: Context) {
     suspend fun insertarUsuario(u: Usuario): Long = usuarioDao.insertar(u)
     suspend fun actualizarUsuario(u: Usuario) = usuarioDao.actualizar(u)
     suspend fun eliminarUsuario(u: Usuario) = usuarioDao.eliminar(u)
+
     suspend fun obtenerUsuarioPorId(id: Long) = usuarioDao.obtenerPorId(id)
+
+    suspend fun obtenerUsuarioPorCorreo(correo: String) = usuarioDao.obtenerPorCorreo(correo) // 👈 Nuevo método
 
     // Platos
     fun obtenerPlatos(): Flow<List<Plato>> = platoDao.obtenerTodos()

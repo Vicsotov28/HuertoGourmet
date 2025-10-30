@@ -19,6 +19,8 @@ class UsuarioViewModel : ViewModel() {
     private val _estado = MutableStateFlow(UsuarioUiState())
     val estado = _estado.asStateFlow()
 
+    private val usuariosRegistrados = mutableListOf<Pair<String, String>>() // (correo, clave)
+
     // --- Manejadores de cambios ---
     fun onNombreChange(valor: String) {
         _estado.value = _estado.value.copy(nombre = valor)
@@ -36,6 +38,7 @@ class UsuarioViewModel : ViewModel() {
         _estado.value = _estado.value.copy(aceptaTerminos = valor)
     }
 
+    // --- Validación ---
     fun validarFormulario(): Boolean {
         val errores = mutableMapOf<String, String?>()
 
@@ -46,13 +49,16 @@ class UsuarioViewModel : ViewModel() {
         if (!_estado.value.aceptaTerminos) errores["aceptaTerminos"] = "Debe aceptar los términos"
 
         _estado.value = _estado.value.copy(errores = errores)
-
         return errores.isEmpty()
     }
 
-
     fun registrarUsuario() {
         viewModelScope.launch {
+            usuariosRegistrados.add(_estado.value.correo to _estado.value.clave)
         }
+    }
+
+    fun validarLogin(correo: String, clave: String): Boolean {
+        return usuariosRegistrados.any { it.first == correo && it.second == clave }
     }
 }

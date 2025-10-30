@@ -13,30 +13,29 @@ class UsuarioRoomViewModel(application: Application) : AndroidViewModel(applicat
 
     private val repo = RepositorioApp(application)
 
-    // Flow que expone la lista de usuarios
     val usuarios = repo.obtenerUsuarios().stateIn(
         scope = viewModelScope,
         started = SharingStarted.Lazily,
         initialValue = emptyList()
     )
 
-
-    fun crearUsuario(nombre: String, apellido: String, correo: String) {
+    fun crearUsuario(nombre: String, correo: String, clave: String) {
         viewModelScope.launch {
-            val nuevo = Usuario(nombre = nombre, apellido = apellido, correo = correo)
+            val nuevo = Usuario(nombre = nombre, correo = correo, clave = clave)
             repo.insertarUsuario(nuevo)
         }
     }
 
+    suspend fun loginUsuario(correo: String, clave: String): Boolean {
+        val usuario = repo.obtenerUsuarioPorCorreo(correo)
+        return usuario?.clave == clave
+    }
+
     fun actualizarUsuario(usuario: Usuario) {
-        viewModelScope.launch {
-            repo.actualizarUsuario(usuario)
-        }
+        viewModelScope.launch { repo.actualizarUsuario(usuario) }
     }
 
     fun eliminarUsuario(usuario: Usuario) {
-        viewModelScope.launch {
-            repo.eliminarUsuario(usuario)
-        }
+        viewModelScope.launch { repo.eliminarUsuario(usuario) }
     }
 }
