@@ -36,7 +36,7 @@ fun RegistroScreen(
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(title = { Text("Registro de Usuario 🌿") })
+            CenterAlignedTopAppBar(title = { Text("Registro de Usuario ") })
         }
     ) { padding ->
         Column(
@@ -88,7 +88,6 @@ fun RegistroScreen(
 
             Button(
                 onClick = {
-                    // Validaciones básicas
                     if (nombre.isBlank()) {
                         mensajeError = "Ingrese su nombre"
                         return@Button

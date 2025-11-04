@@ -14,7 +14,7 @@ interface UsuarioDao {
     suspend fun obtenerPorId(id: Long): Usuario?
 
     @Query("SELECT * FROM usuarios WHERE correo = :correo LIMIT 1")
-    suspend fun obtenerPorCorreo(correo: String): Usuario? // 👈 Nuevo método
+    suspend fun obtenerPorCorreo(correo: String): Usuario?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertar(usuario: Usuario): Long
