@@ -38,7 +38,6 @@ class UsuarioViewModel : ViewModel() {
         _estado.value = _estado.value.copy(aceptaTerminos = valor)
     }
 
-    // --- Validación ---
     fun validarFormulario(): Boolean {
         val errores = mutableMapOf<String, String?>()
 
