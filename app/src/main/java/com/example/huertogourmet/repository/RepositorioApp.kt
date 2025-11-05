@@ -20,7 +20,7 @@ class RepositorioApp(context: Context) {
 
     suspend fun obtenerUsuarioPorId(id: Long) = usuarioDao.obtenerPorId(id)
 
-    suspend fun obtenerUsuarioPorCorreo(correo: String) = usuarioDao.obtenerPorCorreo(correo) // 👈 Nuevo método
+    suspend fun obtenerUsuarioPorCorreo(correo: String) = usuarioDao.obtenerPorCorreo(correo)
 
     // Platos
     fun obtenerPlatos(): Flow<List<Plato>> = platoDao.obtenerTodos()

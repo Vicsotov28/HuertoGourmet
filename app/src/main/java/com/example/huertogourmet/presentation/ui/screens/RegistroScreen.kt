@@ -75,6 +75,7 @@ fun RegistroScreen(
                     value = nombre,
                     onValueChange = { nombre = it },
                     label = { Text("Nombre") },
+                    singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                     keyboardActions = KeyboardActions(
@@ -87,6 +88,7 @@ fun RegistroScreen(
                     value = correo,
                     onValueChange = { correo = it },
                     label = { Text("Correo Electrónico") },
+                    singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(correoRequester),
@@ -101,6 +103,7 @@ fun RegistroScreen(
                     value = clave,
                     onValueChange = { clave = it },
                     label = { Text("Contraseña") },
+                    singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier
                         .fillMaxWidth()
