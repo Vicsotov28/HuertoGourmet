@@ -66,4 +66,3 @@ fun InicioScreen(navController: NavController) {
         }
     }
 }
-

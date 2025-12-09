@@ -8,5 +8,6 @@ data class Plato(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val nombre: String,
     val descripcion: String,
-    val precio: Double
+    val precio: Double,
+    val imagen: String? = null
 )

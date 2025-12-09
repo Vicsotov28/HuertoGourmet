@@ -8,5 +8,6 @@ data class Usuario(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val nombre: String,
     val correo: String,
-    val clave: String
+    val clave: String,
+    val telefono: String
 )

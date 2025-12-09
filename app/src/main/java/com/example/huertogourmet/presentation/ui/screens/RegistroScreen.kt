@@ -38,6 +38,7 @@ fun RegistroScreen(
     var nombre by remember { mutableStateOf("") }
     var correo by remember { mutableStateOf("") }
     var clave by remember { mutableStateOf("") }
+    var telefono by remember { mutableStateOf("") }
     var aceptaTerminos by remember { mutableStateOf(false) }
     var mensajeError by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(true) }
@@ -114,6 +115,21 @@ fun RegistroScreen(
                     )
                 )
 
+                OutlinedTextField(
+                    value = telefono,
+                    onValueChange = { telefono = it },
+                    label = { Text("telefono") },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(
+                        onNext = { claveRequester.requestFocus() }
+                    )
+                )
+
+
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(
                         checked = aceptaTerminos,
@@ -169,7 +185,7 @@ fun RegistroScreen(
                             isLoading = true
 
                             try {
-                                viewModel.crearUsuario(nombre, correo, clave)
+                                viewModel.crearUsuario(nombre, correo, clave, telefono)
                                 delay(200)
                                 navController.navigate(Screen.Login.route) {
                                     popUpTo(Screen.Registro.route) { inclusive = true }

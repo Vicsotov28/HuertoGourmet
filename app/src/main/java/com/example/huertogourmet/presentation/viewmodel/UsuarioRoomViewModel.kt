@@ -19,23 +19,27 @@ class UsuarioRoomViewModel(application: Application) : AndroidViewModel(applicat
         initialValue = emptyList()
     )
 
-    fun crearUsuario(nombre: String, correo: String, clave: String) {
+    init {
         viewModelScope.launch {
-            val nuevo = Usuario(nombre = nombre, correo = correo, clave = clave)
+            repo.sincronizarUsuariosDesdeRemoto()
+            repo.sincronizarPlatosDesdeRemoto()
+        }
+    }
+
+    fun crearUsuario(nombre: String, correo: String, clave: String, telefono: String) {
+        viewModelScope.launch {
+            val nuevo = Usuario(
+                nombre = nombre,
+                correo = correo,
+                clave = clave,
+                telefono = telefono
+            )
             repo.insertarUsuario(nuevo)
         }
     }
 
     suspend fun loginUsuario(correo: String, clave: String): Boolean {
-        val usuario = repo.obtenerUsuarioPorCorreo(correo)
-        return usuario?.clave == clave
-    }
-
-    fun actualizarUsuario(usuario: Usuario) {
-        viewModelScope.launch { repo.actualizarUsuario(usuario) }
-    }
-
-    fun eliminarUsuario(usuario: Usuario) {
-        viewModelScope.launch { repo.eliminarUsuario(usuario) }
+        val usuario = repo.obtenerUsuarioPorCorreoYClave(correo, clave)
+        return usuario != null
     }
 }

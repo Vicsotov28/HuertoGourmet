@@ -38,6 +38,7 @@ fun LoginScreen(navController: NavController) {
 
     var correo by remember { mutableStateOf("") }
     var clave by remember { mutableStateOf("") }
+    var telefono by remember { mutableStateOf("") }
     var mensajeError by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
@@ -74,6 +75,19 @@ fun LoginScreen(navController: NavController) {
                     onNext = { passwordFocusRequester.requestFocus() }
                 )
             )
+
+            OutlinedTextField(
+                value = telefono,
+                onValueChange = { telefono = it},
+                label = { Text("Telefono") },
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next
+                ),
+            )
+
 
             // Campo contraseña
             OutlinedTextField(

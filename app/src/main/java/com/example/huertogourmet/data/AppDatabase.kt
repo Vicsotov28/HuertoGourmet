@@ -10,7 +10,7 @@ import com.example.huertogourmet.data.dao.UsuarioDao
 import com.example.huertogourmet.data.model.Plato
 import com.example.huertogourmet.data.model.Usuario
 
-@Database(entities = [Usuario::class, Plato::class], version = 2, exportSchema = false)
+@Database(entities = [Usuario::class, Plato::class], version = 4, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun usuarioDao(): UsuarioDao
     abstract fun platoDao(): PlatoDao
