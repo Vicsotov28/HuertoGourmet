@@ -20,6 +20,11 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
 
+    // Kotest y JUnit
+    tasks.withType<Test>().configureEach {
+        useJUnitPlatform()
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -58,6 +63,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.junit.ktx)
     debugImplementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.activity:activity-compose:1.9.0")
 
@@ -92,4 +98,18 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2024.05.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+
+    // testing - unit tests (JVM)
+    testImplementation("io.kotest:kotest-runner-junit5:5.6.2")         // Kotest runner
+    testImplementation("io.kotest:kotest-assertions-core:5.6.2")       // Kotest assertions
+    testImplementation("io.mockk:mockk:1.13.5")                       // MockK
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.2") // coroutines test
+
+// Android instrumented / Compose UI tests
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.0")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.5.0")
+
+// MockWebServer para pruebas que simulan API HTTP
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.11.0")
+
 }
