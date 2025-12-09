@@ -113,15 +113,7 @@ fun MenuScreen(
                                         modifier = Modifier.size(90.dp).clip(RoundedCornerShape(10.dp)),
                                         contentScale = ContentScale.Crop
                                     )
-                                } else {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.pastel_choclo),
-                                        contentDescription = plato.nombre,
-                                        modifier = Modifier.size(90.dp).clip(RoundedCornerShape(10.dp)),
-                                        contentScale = ContentScale.Crop
-                                    )
                                 }
-
                                 Spacer(Modifier.width(12.dp))
 
                                 Column(Modifier.weight(1f)) {
