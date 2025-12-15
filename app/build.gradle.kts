@@ -104,7 +104,9 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core:5.6.2")       // Kotest assertions
     testImplementation("io.mockk:mockk:1.13.5")                       // MockK
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.2") // coroutines test
-
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
 // Android instrumented / Compose UI tests
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.0")
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.5.0")

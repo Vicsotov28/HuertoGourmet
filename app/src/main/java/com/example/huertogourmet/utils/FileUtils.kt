@@ -1,28 +1,27 @@
 package com.example.huertogourmet.utils
-
 import android.content.Context
 import android.net.Uri
-import java.io.File
-import java.io.InputStream
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
-object FileUtils {
+fun crearMultipartDesdeUri(
+    context: Context,
+    uri: Uri
+): MultipartBody.Part {
 
-    fun getFileFromUri(context: Context, uri: Uri): File? {
-        return try {
-            val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+    val contentResolver = context.contentResolver
+    val mimeType = contentResolver.getType(uri) ?: "image/*"
 
-            val tempFile = File.createTempFile("upload_image", ".jpg", context.cacheDir)
-            tempFile.deleteOnExit()
+    val inputStream = contentResolver.openInputStream(uri)!!
+    val bytes = inputStream.readBytes()
+    inputStream.close()
 
-            inputStream?.use { input ->
-                tempFile.outputStream().use { output ->
-                    input.copyTo(output)
-                }
-            }
-            tempFile
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
+    val requestBody = bytes.toRequestBody(mimeType.toMediaTypeOrNull())
+
+    return MultipartBody.Part.createFormData(
+        name = "content", // 🔥 MISMO NOMBRE QUE EN XANO
+        filename = "imagen.jpg",
+        body = requestBody
+    )
 }

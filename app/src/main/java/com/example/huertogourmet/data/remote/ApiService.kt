@@ -37,8 +37,9 @@ interface ApiService {
     @Multipart
     @POST("upload/image")
     suspend fun subirImagen(
-        @Part file: MultipartBody.Part
+        @Part part: MultipartBody.Part
     ): Response<UploadResponse>
+
 
     // --- NUEVO: COMENTARIOS ---
     @GET("comments")

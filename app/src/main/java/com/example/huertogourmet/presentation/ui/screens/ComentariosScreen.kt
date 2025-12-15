@@ -27,6 +27,7 @@ import java.io.FileOutputStream
 import com.example.huertogourmet.presentation.navigation.Screen
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.draw.clip
+import com.example.huertogourmet.utils.crearMultipartDesdeUri
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ComentariosScreen(
@@ -40,14 +41,15 @@ fun ComentariosScreen(
 
     var texto by remember { mutableStateOf(TextFieldValue("")) }
     var selectedUri by remember { mutableStateOf<Uri?>(null) }
-    var selectedFile by remember { mutableStateOf<File?>(null) }
+
 
     val isUploading by viewModel.isUploading.collectAsState()
     val lastResult by viewModel.lastResult.collectAsState()
 
-    val pickLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+    val pickLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
         selectedUri = uri
-        selectedFile = uri?.let { uriToFile(context, it) }
     }
 
     // Cuando el comentario se crea OK, volvemos a Inicio
@@ -60,41 +62,91 @@ fun ComentariosScreen(
         }
     }
 
-    Scaffold(topBar = { CenterAlignedTopAppBar(title = { Text("Comentarios") }) }) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(title = { Text("Comentarios") })
+        }
+    ) { padding ->
 
-            // Logo arriba
-            Image(painter = painterResource(R.drawable.huertogourmet_logo), contentDescription = "Logo", modifier = Modifier.size(80.dp).align(Alignment.CenterHorizontally))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
 
-            Text("Comenta sobre el plato", fontSize = 20.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+            Image(
+                painter = painterResource(R.drawable.huertogourmet_logo),
+                contentDescription = "Logo",
+                modifier = Modifier
+                    .size(80.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
 
-            OutlinedTextField(value = texto, onValueChange = { texto = it }, label = { Text("Tu comentario") }, modifier = Modifier.fillMaxWidth(), singleLine = false, maxLines = 4)
+            Text(
+                "Comenta sobre el plato",
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
 
-            // Preview imagen seleccionada
-            selectedUri?.let { uri ->
-                AsyncImage(model = uri, contentDescription = "Imagen seleccionada", modifier = Modifier.fillMaxWidth().height(220.dp).clip(RoundedCornerShape(8.dp)))
+            OutlinedTextField(
+                value = texto,
+                onValueChange = { texto = it },
+                label = { Text("Tu comentario") },
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 4
+            )
+
+            selectedUri?.let {
+                AsyncImage(
+                    model = it,
+                    contentDescription = "Imagen seleccionada",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
             }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                OutlinedButton(onClick = { pickLauncher.launch("image/*") }, modifier = Modifier.weight(1f)) { Text("Seleccionar foto") }
-                OutlinedButton(onClick = { selectedUri = null; selectedFile = null }, modifier = Modifier.weight(1f)) { Text("Quitar foto") }
-            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedButton(
+                    onClick = { pickLauncher.launch("image/*") },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Seleccionar foto")
+                }
 
-            Spacer(modifier = Modifier.height(8.dp))
+                OutlinedButton(
+                    onClick = { selectedUri = null },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Quitar foto")
+                }
+            }
 
             Button(
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isUploading,
                 onClick = {
                     scope.launch {
+
+                        val multipart = selectedUri?.let {
+                            crearMultipartDesdeUri(context, it)
+                        }
+
                         viewModel.crearComentarioConImagen(
                             platoId = platoId,
                             usuarioId = usuarioId,
                             texto = texto.text,
-                            file = selectedFile
+                            part = multipart
                         )
                     }
-                },
-                enabled = !isUploading,
-                modifier = Modifier.fillMaxWidth()
+                }
             ) {
                 if (isUploading) {
                     CircularProgressIndicator(modifier = Modifier.size(20.dp))
@@ -105,11 +157,18 @@ fun ComentariosScreen(
                 }
             }
 
-            lastResult?.let { Text(it, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(top = 8.dp)) }
+            lastResult?.let {
+                Text(it, color = MaterialTheme.colorScheme.primary)
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 
-            OutlinedButton(onClick = { navController.popBackStack() }, modifier = Modifier.fillMaxWidth()) { Text("Volver") }
+            OutlinedButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Volver")
+            }
         }
     }
 }

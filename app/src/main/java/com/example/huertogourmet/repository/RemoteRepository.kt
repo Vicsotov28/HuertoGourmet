@@ -8,7 +8,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Response
-import java.io.File
 
 class RemoteRepository {
 
@@ -20,17 +19,8 @@ class RemoteRepository {
         RetrofitInstance.api.obtenerDish(id)
 
     // --- NUEVO: SUBIDA DE IMAGENES (Para Xano) ---
-    suspend fun subirImagen(archivo: File): Response<UploadResponse> {
-        // 1. Preparamos el archivo indicando que es una imagen
-        val requestFile = archivo.asRequestBody("image/*".toMediaTypeOrNull())
-
-        // 2. Creamos la "parte" del formulario.
-        // IMPORTANTE: "file" es el nombre del Input que configuramos en Xano
-        val body = MultipartBody.Part.createFormData("file", archivo.name, requestFile)
-
-        // 3. Llamamos a la API
-        return RetrofitInstance.api.subirImagen(body)
-    }
+    suspend fun subirImagen(part: MultipartBody.Part) =
+        RetrofitInstance.api.subirImagen(part)
 
     // --- NUEVO: COMENTARIOS ---
     suspend fun crearComentario(comentario: ComentarioRemote): Response<ComentarioRemote> {

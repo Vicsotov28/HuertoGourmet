@@ -5,12 +5,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.huertogourmet.data.remote.ComentarioRemote
 import com.example.huertogourmet.repository.RemoteRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
+import okhttp3.MultipartBody
 
 class ComentariosViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -27,7 +25,7 @@ class ComentariosViewModel(application: Application) : AndroidViewModel(applicat
         platoId: Long,
         usuarioId: Long,
         texto: String,
-        file: File? // Si es null, se crea comentario sin foto
+        part: MultipartBody.Part?
     ) {
         viewModelScope.launch {
             _isUploading.value = true
@@ -36,13 +34,11 @@ class ComentariosViewModel(application: Application) : AndroidViewModel(applicat
             try {
                 var imagenUrl: String? = null
 
-                // 1. Subir imagen a Xano (si existe)
-                if (file != null) {
-                    // Usamos IO para operaciones de red
-                    val resp = withContext(Dispatchers.IO) { repo.subirImagen(file) }
+                // 1. Subir imagen a Xano
+                if (part != null) {
+                    val resp = repo.subirImagen(part)
 
                     if (resp.isSuccessful && resp.body() != null) {
-                        // Xano devuelve un objeto con la URL (según tu UploadResponse)
                         imagenUrl = resp.body()!!.path
                     } else {
                         _lastResult.value = "Error al subir imagen: ${resp.code()}"
@@ -51,24 +47,23 @@ class ComentariosViewModel(application: Application) : AndroidViewModel(applicat
                     }
                 }
 
-                // 2. Crear el objeto comentario
+                // 2. Crear comentario
                 val comentario = ComentarioRemote(
-                    id = 0, // Xano genera el ID
+                    id = 0,
                     platoId = platoId,
                     usuarioId = usuarioId,
                     texto = texto,
-                    imagenUrl = imagenUrl, // Pasamos la URL obtenida (o null)
+                    imagenUrl = imagenUrl,
                     creadoEn = null
                 )
 
-                // 3. Enviar comentario a la base de datos
-                val createResp = withContext(Dispatchers.IO) { repo.crearComentario(comentario) }
+                val createResp = repo.crearComentario(comentario)
 
-                if (createResp.isSuccessful) {
-                    _lastResult.value = "Comentario creado correctamente"
-                } else {
-                    _lastResult.value = "Error al crear comentario: ${createResp.code()}"
-                }
+                _lastResult.value =
+                    if (createResp.isSuccessful)
+                        "Comentario creado correctamente"
+                    else
+                        "Error al crear comentario: ${createResp.code()}"
 
             } catch (e: Exception) {
                 e.printStackTrace()

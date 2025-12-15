@@ -1,6 +1,5 @@
 package com.example.huertogourmet.presentation.ui.screens
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,7 +19,6 @@ import androidx.navigation.NavController
 import com.example.huertogourmet.presentation.navigation.Screen
 import com.example.huertogourmet.presentation.viewmodel.UsuarioRoomViewModel
 import com.example.huertogourmet.presentation.viewmodel.UsuarioRoomViewModelFactory
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,197 +26,160 @@ import kotlinx.coroutines.launch
 fun RegistroScreen(
     navController: NavController
 ) {
-    val context = LocalContext.current.applicationContext as android.app.Application
+    val application = LocalContext.current.applicationContext as android.app.Application
     val viewModel: UsuarioRoomViewModel = viewModel(
-        factory = UsuarioRoomViewModelFactory(context)
+        factory = UsuarioRoomViewModelFactory(application)
     )
 
     val scope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
+    val correoRequester = remember { FocusRequester() }
+    val claveRequester = remember { FocusRequester() }
 
     var nombre by remember { mutableStateOf("") }
     var correo by remember { mutableStateOf("") }
     var clave by remember { mutableStateOf("") }
     var telefono by remember { mutableStateOf("") }
     var aceptaTerminos by remember { mutableStateOf(false) }
+
     var mensajeError by remember { mutableStateOf<String?>(null) }
-    var isLoading by remember { mutableStateOf(true) }
+    var isLoading by remember { mutableStateOf(false) }
 
-    // Animacion Cargando
-    LaunchedEffect(Unit) {
-        delay(600)
-        isLoading = false
-    }
-
-    if (isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(title = { Text("Registro de Usuario 🌱") })
         }
-    } else {
-        val focusManager = LocalFocusManager.current
-        val correoRequester = remember { FocusRequester() }
-        val claveRequester = remember { FocusRequester() }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-        Scaffold(
-            topBar = {
-                CenterAlignedTopAppBar(title = { Text("Registro de Usuario 🌱") })
+            OutlinedTextField(
+                value = nombre,
+                onValueChange = { nombre = it },
+                label = { Text("Nombre") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(
+                    onNext = { correoRequester.requestFocus() }
+                )
+            )
+
+            OutlinedTextField(
+                value = correo,
+                onValueChange = { correo = it },
+                label = { Text("Correo electrónico") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(correoRequester),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(
+                    onNext = { claveRequester.requestFocus() }
+                )
+            )
+
+            OutlinedTextField(
+                value = clave,
+                onValueChange = { clave = it },
+                label = { Text("Contraseña") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(claveRequester),
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = { focusManager.clearFocus() }
+                )
+            )
+
+            OutlinedTextField(
+                value = telefono,
+                onValueChange = { telefono = it },
+                label = { Text("Teléfono") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(
+                    checked = aceptaTerminos,
+                    onCheckedChange = { aceptaTerminos = it }
+                )
+                Spacer(Modifier.width(8.dp))
+                Text("Acepto los términos y condiciones")
             }
-        ) { padding ->
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // Campo Nombre
-                OutlinedTextField(
-                    value = nombre,
-                    onValueChange = { nombre = it },
-                    label = { Text("Nombre") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                    keyboardActions = KeyboardActions(
-                        onNext = { correoRequester.requestFocus() }
-                    )
-                )
 
-                // Campo Correo
-                OutlinedTextField(
-                    value = correo,
-                    onValueChange = { correo = it },
-                    label = { Text("Correo Electrónico") },
-                    singleLine = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(correoRequester),
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                    keyboardActions = KeyboardActions(
-                        onNext = { claveRequester.requestFocus() }
-                    )
-                )
+            mensajeError?.let {
+                Text(text = it, color = MaterialTheme.colorScheme.error)
+            }
 
-                // Campo Clave
-                OutlinedTextField(
-                    value = clave,
-                    onValueChange = { clave = it },
-                    label = { Text("Contraseña") },
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(claveRequester),
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(
-                        onDone = { focusManager.clearFocus() }
-                    )
-                )
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading,
+                onClick = {
+                    mensajeError = null
 
-                OutlinedTextField(
-                    value = telefono,
-                    onValueChange = { telefono = it },
-                    label = { Text("telefono") },
-                    singleLine = true,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                    keyboardActions = KeyboardActions(
-                        onNext = { claveRequester.requestFocus() }
-                    )
-                )
+                    if (nombre.isBlank()) {
+                        mensajeError = "Ingrese su nombre"
+                        return@Button
+                    }
+                    if (correo.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+                        mensajeError = "Correo inválido"
+                        return@Button
+                    }
+                    if (clave.length < 6) {
+                        mensajeError = "La contraseña debe tener al menos 6 caracteres"
+                        return@Button
+                    }
+                    if (!aceptaTerminos) {
+                        mensajeError = "Debe aceptar los términos"
+                        return@Button
+                    }
 
+                    isLoading = true
 
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(
-                        checked = aceptaTerminos,
-                        onCheckedChange = { aceptaTerminos = it }
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text("Acepto los términos y condiciones")
-                }
-
-                mensajeError?.let {
-                    Text(
-                        text = it,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-
-                // Boton animado
-                var pressed by remember { mutableStateOf(false) }
-                val bgColor by animateColorAsState(
-                    targetValue = if (pressed)
-                        MaterialTheme.colorScheme.primaryContainer
-                    else
-                        MaterialTheme.colorScheme.primary
-                )
-
-                Button(
-                    onClick = {
-                        pressed = true
-                        scope.launch {
-                            if (nombre.isBlank()) {
-                                mensajeError = "Ingrese su nombre"
-                                pressed = false
-                                return@launch
-                            }
-                            if (correo.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
-                                mensajeError = "Correo inválido"
-                                pressed = false
-                                return@launch
-                            }
-                            if (clave.length < 6) {
-                                mensajeError = "La contraseña debe tener al menos 6 caracteres"
-                                pressed = false
-                                return@launch
-                            }
-                            if (!aceptaTerminos) {
-                                mensajeError = "Debe aceptar los términos y condiciones"
-                                pressed = false
-                                return@launch
-                            }
-
-                            mensajeError = null
-                            isLoading = true
-
-                            try {
-                                viewModel.crearUsuario(nombre, correo, clave, telefono)
-                                delay(200)
+                    scope.launch {
+                        viewModel.crearUsuario(
+                            nombre = nombre,
+                            correo = correo,
+                            clave = clave,
+                            telefono = telefono
+                        ) { ok ->
+                            isLoading = false
+                            if (ok) {
                                 navController.navigate(Screen.Login.route) {
                                     popUpTo(Screen.Registro.route) { inclusive = true }
                                 }
-                            } catch (e: Exception) {
-                                mensajeError = "Error al registrar: ${e.message}"
-                            } finally {
-                                isLoading = false
-                                pressed = false
+                            } else {
+                                mensajeError = "No se pudo registrar el usuario"
                             }
                         }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = bgColor),
-                    enabled = !isLoading
-                ) {
-                    if (isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    } else {
-                        Text("Registrar")
                     }
                 }
-
-                // boton para login
-                OutlinedButton(
-                    onClick = { navController.navigate(Screen.Login.route) },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Volver al Inicio de Sesión")
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text("Registrar")
                 }
+            }
+
+            OutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { navController.navigate(Screen.Login.route) }
+            ) {
+                Text("Volver al login")
             }
         }
     }

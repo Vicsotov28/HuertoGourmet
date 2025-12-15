@@ -5,7 +5,6 @@ import com.example.huertogourmet.data.remote.RetrofitInstance
 import retrofit2.Response
 
 class UsuarioRemoteRepository {
-    suspend fun obtenerUsuarios(): Response<List<UsuarioRemote>> = RetrofitInstance.api.obtenerUsuarios()
     suspend fun obtenerUsuario(id: Long): Response<UsuarioRemote> = RetrofitInstance.api.obtenerUsuario(id)
     suspend fun crearUsuario(usuario: UsuarioRemote): Response<UsuarioRemote> = RetrofitInstance.api.crearUsuario(usuario)
 }

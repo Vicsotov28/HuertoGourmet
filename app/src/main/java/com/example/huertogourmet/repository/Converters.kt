@@ -21,7 +21,6 @@ fun Plato.toPlatoRemote(): PlatoRemote = PlatoRemote(
 )
 
 fun UsuarioRemote.toUsuarioLocal(): Usuario = Usuario(
-    id = this.id,
     nombre = this.nombre ?: "",
     correo = this.correo ?: "",
     clave = this.clave ?: "",
@@ -29,7 +28,6 @@ fun UsuarioRemote.toUsuarioLocal(): Usuario = Usuario(
 )
 
 fun Usuario.toUsuarioRemote(): UsuarioRemote = UsuarioRemote(
-    id = this.id,
     nombre = this.nombre,
     correo = this.correo,
     telefono = this.telefono,

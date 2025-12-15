@@ -8,10 +8,12 @@ import com.example.huertogourmet.repository.RepositorioApp
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import com.example.huertogourmet.repository.UsuarioRemoteRepository
 
 class UsuarioRoomViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repo = RepositorioApp(application)
+    private val remoteRepo = UsuarioRemoteRepository()
 
     val usuarios = repo.obtenerUsuarios().stateIn(
         scope = viewModelScope,
@@ -26,7 +28,7 @@ class UsuarioRoomViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-    fun crearUsuario(nombre: String, correo: String, clave: String, telefono: String) {
+    fun crearUsuario(nombre: String, correo: String, clave: String, telefono: String, onResultado: (Boolean) -> Unit) {
         viewModelScope.launch {
             val nuevo = Usuario(
                 nombre = nombre,
@@ -34,7 +36,8 @@ class UsuarioRoomViewModel(application: Application) : AndroidViewModel(applicat
                 clave = clave,
                 telefono = telefono
             )
-            repo.insertarUsuario(nuevo)
+            val ok = repo.crearUsuarioCompleto(nuevo)
+            onResultado(ok)
         }
     }
 
